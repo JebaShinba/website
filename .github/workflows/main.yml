@@ -1,0 +1,34 @@
+name: Demo Workflow
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to the branch you want to trigger the workflow
+
+jobs:
+  demo_job:
+    runs-on: ubuntu-latest  # Using Ubuntu as the runner environment
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2  # Step to check out the repository code
+
+      - name: Create a Build Directory and File
+        run: |
+          echo "Building ..."
+          mkdir build  # Create the build directory
+          touch build/somefile.txt  # Create a new file in the build directory
+
+      - name: List Build Directory Contents
+        run: ls -la build  # List contents of the build directory to verify file creation
+
+      - name: Create a Docker Container with Alpine
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c "
+            echo 'Inside Docker Container...' && \
+            mkdir -p /workspace/build && \
+            touch /workspace/build/anotherfile.txt
+          "
+
+      - name: List Build Directory After Docker Run
+        run: ls -la build  # List contents again to check for the new file
